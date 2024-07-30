@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:copycat_base/common/failure.dart';
 import 'package:copycat_base/db/subscription/subscription.dart';
 import 'package:copycat_base/domain/sources/subscription.dart';
+import 'package:copycat_pro/utils/extensions.dart';
 import 'package:injectable/injectable.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:retry/retry.dart';
@@ -21,7 +22,7 @@ class RemoteSubscriptionSource implements SubscriptionSource {
   FunctionsClient get function => client.functions;
 
   @override
-  Future<CustomerInfo?> get(String userId) async {
+  Future<Subscription> get(String userId) async {
     try {
       final response = await retry(
         // Make a GET request
@@ -34,7 +35,8 @@ class RemoteSubscriptionSource implements SubscriptionSource {
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
 
-      return CustomerInfo.fromJson(response.data["customer"]);
+      final customer = CustomerInfo.fromJson(response.data["customer"]);
+      return customer.toSubscription();
     } on FunctionException catch (e) {
       throw Failure(
         message: e.details["error"] ?? "Invalid Customer",
@@ -49,7 +51,7 @@ class RemoteSubscriptionSource implements SubscriptionSource {
   }
 
   @override
-  Future<CustomerInfo> applyPromoCoupon(String code) async {
+  Future<Subscription> applyPromoCoupon(String code) async {
     try {
       final response = await retry(
         () => function
@@ -62,9 +64,10 @@ class RemoteSubscriptionSource implements SubscriptionSource {
         retryIf: (e) => e is SocketException || e is TimeoutException,
       );
 
-      return CustomerInfo.fromJson(
+      final customer = CustomerInfo.fromJson(
         Map<String, dynamic>.from(response.data["customer"]),
       );
+      return customer.toSubscription();
     } on FunctionException catch (e) {
       throw Failure(
         message: e.details["error"] ?? "Invalid Code",

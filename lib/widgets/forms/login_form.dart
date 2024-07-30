@@ -1,6 +1,6 @@
 import 'package:copycat_base/domain/model/auth_user/auth_user.dart';
 import 'package:copycat_base/domain/model/localization.dart';
-import 'package:copycat_pro/utils/utility.dart';
+import 'package:copycat_pro/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:form_validator/form_validator.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart' as su_auth;
@@ -26,33 +26,12 @@ class CopyCatClipboardLoginForm extends StatelessWidget {
         if (response.session != null && response.user != null) {
           final user = response.user!.toAuthUser();
           onSignUpComplete(user, response.session!.accessToken);
-          // TODO: Analytics
-          // if (isAnalyticsSupported) {
-          //   analytics.logSignUp(
-          //     signUpMethod: "Email",
-          //     parameters: {
-          //       "userId": response.user!.id,
-          //       "email": response.user!.email!,
-          //     },
-          //   );
-          // }
         }
       },
       onSignInComplete: (su_auth.AuthResponse response) {
         if (response.session != null && response.user != null) {
           final user = response.user!.toAuthUser();
           onSignInComplete(user, response.session!.accessToken);
-
-          // TODO: Analytics
-          // if (isAnalyticsSupported) {
-          //   analytics.logLogin(
-          //     loginMethod: "Email",
-          //     parameters: {
-          //       "userId": response.user!.id,
-          //       "email": response.user!.email!,
-          //     },
-          //   );
-          // }
         }
       },
       onError: (error) {

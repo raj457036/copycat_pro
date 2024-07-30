@@ -2,7 +2,7 @@ import 'package:copycat_base/common/failure.dart';
 import 'package:copycat_base/common/logging.dart';
 import 'package:copycat_base/domain/model/auth_user/auth_user.dart';
 import 'package:copycat_base/domain/repositories/auth.dart';
-import 'package:copycat_pro/utils/utility.dart';
+import 'package:copycat_pro/utils/extensions.dart';
 import 'package:dartz/dartz.dart';
 import 'package:injectable/injectable.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;

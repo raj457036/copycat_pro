@@ -1,6 +1,6 @@
 import 'package:copycat_base/domain/model/auth_user/auth_user.dart';
 import 'package:copycat_base/domain/model/localization.dart';
-import 'package:copycat_pro/utils/utility.dart';
+import 'package:copycat_pro/utils/extensions.dart';
 import 'package:flutter/material.dart';
 import 'package:supabase_auth_ui/supabase_auth_ui.dart' as sb;
 

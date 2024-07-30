@@ -43,7 +43,6 @@ class RemoteClipCollectionSource implements ClipCollectionSource {
 
   @override
   Future<void> deleteAll() {
-    // TODO: implement deleteAll
     throw UnimplementedError();
   }
 

@@ -23,6 +23,7 @@ path_provider_foundation=/Users/rajsingh/.pub-cache/hosted/pub.dev/path_provider
 path_provider_linux=/Users/rajsingh/.pub-cache/hosted/pub.dev/path_provider_linux-2.2.1/
 path_provider_windows=/Users/rajsingh/.pub-cache/hosted/pub.dev/path_provider_windows-2.3.0/
 purchases_flutter=/Users/rajsingh/.pub-cache/hosted/pub.dev/purchases_flutter-6.30.2/
+purchases_ui_flutter=/Users/rajsingh/.pub-cache/hosted/pub.dev/purchases_ui_flutter-6.30.2/
 screen_retriever=/Users/rajsingh/.pub-cache/hosted/pub.dev/screen_retriever-0.1.9/
 shared_preferences=/Users/rajsingh/.pub-cache/hosted/pub.dev/shared_preferences-2.2.3/
 shared_preferences_android=/Users/rajsingh/.pub-cache/hosted/pub.dev/shared_preferences_android-2.2.4/
