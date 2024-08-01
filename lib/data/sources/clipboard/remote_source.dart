@@ -19,10 +19,7 @@ class RemoteClipboardSource implements ClipboardSource {
 
   @override
   Future<ClipboardItem> create(ClipboardItem item) async {
-    final encrypted = await item.encrypt();
-
-    final docs = await db.from(table).insert(encrypted.toJson()).select();
-
+    final docs = await db.from(table).insert(item.toJson()).select();
     final createdItem = item.copyWith(
       serverId: docs.first["id"],
       lastSynced: now(),

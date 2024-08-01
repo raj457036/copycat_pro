@@ -1,0 +1,1 @@
+const kMaxDropItemCount = 5;

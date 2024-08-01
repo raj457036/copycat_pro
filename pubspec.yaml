@@ -28,6 +28,8 @@ dependencies:
   url_launcher: ^6.3.0
   form_validator: ^2.1.1
   freezed_annotation: ^2.4.1
+  super_drag_and_drop: ^0.8.18
+  super_clipboard: ^0.8.17
 
 dev_dependencies:
   flutter_test:
