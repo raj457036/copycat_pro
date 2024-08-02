@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:copycat_base/bloc/offline_persistance_cubit/offline_persistance_cubit.dart';
 import 'package:copycat_base/common/logging.dart';
+import 'package:copycat_base/data/services/clipboard_service.dart';
 import 'package:copycat_base/utils/snackbar.dart';
 import 'package:copycat_pro/constants/number/values.dart';
 import 'package:copycat_pro/widgets/drag_drop/drop_area.dart';
@@ -59,9 +60,12 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
   void disableDropZone() =>
       dropZoneActive ? setState(() => dropZoneActive = false) : null;
 
-  FutureOr<DropOperation> onDropOver(event) {
-    enableDropZone();
+  FutureOr<DropOperation> onDropOver(DropOverEvent event) {
+    if (processing) return DropOperation.none;
     if (event.session.allowedOperations.contains(DropOperation.copy)) {
+      final item = event.session.items.first;
+      final isDropAllowed = dropAllowed(item);
+      if (isDropAllowed) enableDropZone();
       return DropOperation.copy;
     } else {
       return DropOperation.none;
@@ -69,11 +73,8 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
   }
 
   Future<void> onPerformDrop(PerformDropEvent event) async {
-    disableDropZone();
-
-    setState(() {
-      processing = true;
-    });
+    if (processing) return;
+    setState(() => processing = true);
     try {
       final items = event.session.items;
 
@@ -89,7 +90,7 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
         final reader = item.dataReader;
         if (reader == null) continue;
         DataFormat? selectedFormat;
-        final itemFormats = reader.getFormats(Formats.standardFormats);
+        final itemFormats = reader.getFormats(allSupportedFormats);
 
         (selectedFormat, selectedPref) = cubit.clipboard.filterOutByPriority(
           itemFormats,
@@ -116,32 +117,22 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
     } catch (error) {
       logger.e(error);
     } finally {
-      setState(() {
-        processing = false;
-      });
+      setState(() => processing = false);
+      disableDropZone();
     }
   }
 
-  Future<void> pasteItem() async {
-    // final clips = await cubit.clipboard.processMultipleReaderDataFormat(
-    //   res,
-    //   manual: true,
-    // );
-    // if (clips != null) {
-    //   cubit.onClips(clips, manualPaste: true);
-    // }
-  }
   @override
   Widget build(BuildContext context) {
     return DropRegion(
-      formats: Formats.standardFormats,
+      formats: allSupportedFormats,
       hitTestBehavior: HitTestBehavior.opaque,
       onDropOver: onDropOver,
       onDropEnter: onDropEnter,
       onDropLeave: onDropLeave,
       onDropEnded: onDropLeave,
       onPerformDrop: onPerformDrop,
-      child: dropZoneActive ? const DropArea() : widget.child,
+      child: dropZoneActive ? DropArea(processing: processing) : widget.child,
     );
   }
 }

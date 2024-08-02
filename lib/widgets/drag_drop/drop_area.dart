@@ -16,23 +16,25 @@ class DropArea extends StatelessWidget {
     return SizedBox.expand(
       child: ColoredBox(
         color: colors.secondaryContainer,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(
-              Icons.downloading_outlined,
-              size: 95,
-            ),
-            height16,
-            Text(
-              "Drop your files, images or text here",
-              style: textTheme.headlineSmall,
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
+        child: processing
+            ? const CircularProgressIndicator.adaptive()
+            : Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.downloading_outlined,
+                    size: 95,
+                  ),
+                  height16,
+                  Text(
+                    "Drop your files, images or text here",
+                    style: textTheme.headlineSmall,
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
       ),
     );
   }

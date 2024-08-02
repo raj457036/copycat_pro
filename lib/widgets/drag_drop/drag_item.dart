@@ -64,7 +64,7 @@ class DraggableItem extends StatelessWidget {
       dragItemProvider: dragItemProvider,
       allowedOperations: () => const [
         DropOperation.copy,
-        DropOperation.userCancelled,
+        // DropOperation.userCancelled,
       ],
       liftBuilder: previewBuilder,
       dragBuilder: previewBuilder,
