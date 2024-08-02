@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:copycat_base/bloc/offline_persistance_cubit/offline_persistance_cubit.dart';
 import 'package:copycat_base/common/logging.dart';
 import 'package:copycat_base/data/services/clipboard_service.dart';
+import 'package:copycat_base/l10n/l10n.dart';
 import 'package:copycat_base/utils/snackbar.dart';
 import 'package:copycat_pro/constants/number/values.dart';
 import 'package:copycat_pro/widgets/drag_drop/drop_area.dart';
@@ -102,9 +103,7 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
       }
 
       if (items.length > kMaxDropItemCount) {
-        showTextSnackbar(
-          "Maximum $kMaxDropItemCount drop items are supported at once.",
-        );
+        showTextSnackbar(context.locale.maxDroppableItem(kMaxDropItemCount));
       }
 
       final clips = await cubit.clipboard.processMultipleReaderDataFormat(
