@@ -1,26 +1,21 @@
 import 'dart:async';
 
+import 'package:copycat_base/bloc/offline_persistance_cubit/offline_persistance_cubit.dart';
+import 'package:copycat_base/common/logging.dart';
+import 'package:copycat_base/utils/snackbar.dart';
 import 'package:copycat_pro/constants/number/values.dart';
 import 'package:copycat_pro/widgets/drag_drop/drop_area.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 
-typedef ItemPriorityFilter = (DataFormat<Object>?, int)
-    Function(List<DataFormat<Object>> itemFormats, {int prefScore});
-
-typedef ItemPaster = Future<void> Function(
-    Iterable<(DataReader, DataFormat<Object>)> readerSet);
-
 class ClipDropRegion extends StatefulWidget {
   final Widget child;
-  final ItemPriorityFilter itemPriorityFilter;
-  final ItemPaster itemPaster;
+
   const ClipDropRegion({
     super.key,
     required this.child,
-    required this.itemPriorityFilter,
-    required this.itemPaster,
   });
 
   @override
@@ -29,6 +24,14 @@ class ClipDropRegion extends StatefulWidget {
 
 class _ClipDropRegionState extends State<ClipDropRegion> {
   bool dropZoneActive = false;
+  bool processing = false;
+  late final OfflinePersistanceCubit cubit;
+
+  @override
+  void initState() {
+    super.initState();
+    cubit = context.read<OfflinePersistanceCubit>();
+  }
 
   bool dropAllowed(DropItem item) {
     if (item.localData is Map &&
@@ -57,6 +60,7 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
       dropZoneActive ? setState(() => dropZoneActive = false) : null;
 
   FutureOr<DropOperation> onDropOver(event) {
+    enableDropZone();
     if (event.session.allowedOperations.contains(DropOperation.copy)) {
       return DropOperation.copy;
     } else {
@@ -64,6 +68,69 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
     }
   }
 
+  Future<void> onPerformDrop(PerformDropEvent event) async {
+    disableDropZone();
+
+    setState(() {
+      processing = true;
+    });
+    try {
+      final items = event.session.items;
+
+      final isDropAllowed = dropAllowed(items.first);
+      if (!isDropAllowed) return;
+
+      final res = <(DataReader, DataFormat)>[];
+      int selectedPref = -1;
+      int pastedCount = 0;
+
+      for (final item in items) {
+        if (pastedCount >= kMaxDropItemCount) break;
+        final reader = item.dataReader;
+        if (reader == null) continue;
+        DataFormat? selectedFormat;
+        final itemFormats = reader.getFormats(Formats.standardFormats);
+
+        (selectedFormat, selectedPref) = cubit.clipboard.filterOutByPriority(
+          itemFormats,
+          prefScore: selectedPref,
+        );
+        if (selectedFormat == null) continue;
+        res.add((reader, selectedFormat));
+        pastedCount++;
+      }
+
+      if (items.length > kMaxDropItemCount) {
+        showTextSnackbar(
+          "Maximum $kMaxDropItemCount drop items are supported at once.",
+        );
+      }
+
+      final clips = await cubit.clipboard.processMultipleReaderDataFormat(
+        res,
+        manual: true,
+      );
+      if (clips != null) {
+        cubit.onClips(clips, manualPaste: true);
+      }
+    } catch (error) {
+      logger.e(error);
+    } finally {
+      setState(() {
+        processing = false;
+      });
+    }
+  }
+
+  Future<void> pasteItem() async {
+    // final clips = await cubit.clipboard.processMultipleReaderDataFormat(
+    //   res,
+    //   manual: true,
+    // );
+    // if (clips != null) {
+    //   cubit.onClips(clips, manualPaste: true);
+    // }
+  }
   @override
   Widget build(BuildContext context) {
     return DropRegion(
@@ -76,41 +143,5 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
       onPerformDrop: onPerformDrop,
       child: dropZoneActive ? const DropArea() : widget.child,
     );
-  }
-
-  Future<void> onPerformDrop(PerformDropEvent event) async {
-    disableDropZone();
-    final items = event.session.items;
-
-    final isDropAllowed = dropAllowed(items.first);
-    if (!isDropAllowed) return;
-
-    final res = <(DataReader, DataFormat)>[];
-    int selectedPref = -1;
-    int pastedCount = 0;
-
-    for (final item in items) {
-      if (pastedCount >= kMaxDropItemCount) break;
-      final reader = item.dataReader;
-      if (reader == null) continue;
-
-      DataFormat? selectedFormat;
-      final itemFormats = reader.getFormats(Formats.standardFormats);
-      (selectedFormat, selectedPref) = widget.itemPriorityFilter(
-        itemFormats,
-        prefScore: selectedPref,
-      );
-      if (selectedFormat == null) continue;
-      res.add((reader, selectedFormat));
-      pastedCount++;
-    }
-
-    // if (items.length > kMaxDropItemCount) {
-    //   showTextSnackbar(
-    //     "Maximum $kMaxDropItemCount drop items are supported at once.",
-    //   );
-    // }
-
-    await widget.itemPaster(res);
   }
 }

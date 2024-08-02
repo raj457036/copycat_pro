@@ -13,8 +13,11 @@ import 'package:copycat_base/domain/sources/clip_collection.dart' as _i569;
 import 'package:copycat_base/domain/sources/clipboard.dart' as _i191;
 import 'package:copycat_base/domain/sources/subscription.dart' as _i860;
 import 'package:copycat_base/domain/sources/sync_clipboard.dart' as _i903;
+import 'package:copycat_pro/bloc/monetization_cubit/monetization_cubit.dart'
+    as _i1051;
 import 'package:copycat_pro/data/repositories/auth.dart' as _i789;
 import 'package:copycat_pro/data/repositories/drive_credential.dart' as _i729;
+import 'package:copycat_pro/data/repositories/subscription.dart' as _i140;
 import 'package:copycat_pro/data/sources/clip_collection/remote_source.dart'
     as _i342;
 import 'package:copycat_pro/data/sources/clipboard/remote_source.dart' as _i533;
@@ -23,6 +26,7 @@ import 'package:copycat_pro/data/sources/subscription/remote_source.dart'
 import 'package:copycat_pro/data/sources/sync_clipboard/remote_source.dart'
     as _i558;
 import 'package:copycat_pro/di/modules.dart' as _i240;
+import 'package:copycat_pro/domain/repositories/subscription.dart' as _i276;
 import 'package:injectable/injectable.dart' as _i526;
 import 'package:supabase_flutter/supabase_flutter.dart' as _i454;
 
@@ -66,6 +70,11 @@ class CopycatProPackageModule extends _i526.MicroPackageModule {
     );
     gh.lazySingleton<_i447.DriveCredentialRepository>(
         () => _i729.DriveCredentialRepositoryImpl(gh<_i454.SupabaseClient>()));
+    gh.lazySingleton<_i276.SubscriptionRepository>(() =>
+        _i140.SubscriptionRepositoryImpl(
+            remote: gh<_i860.SubscriptionSource>(instanceName: 'remote')));
+    gh.singleton<_i1051.MonetizationCubit>(() =>
+        _i1051.MonetizationCubit(repo: gh<_i276.SubscriptionRepository>()));
   }
 }
 
