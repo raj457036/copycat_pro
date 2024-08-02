@@ -132,7 +132,15 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
       onDropLeave: onDropLeave,
       onDropEnded: onDropLeave,
       onPerformDrop: onPerformDrop,
-      child: dropZoneActive ? DropArea(processing: processing) : widget.child,
+      child: Stack(
+        children: [
+          widget.child,
+          if (dropZoneActive)
+            SizedBox.expand(
+              child: DropArea(processing: processing),
+            ),
+        ],
+      ),
     );
   }
 }

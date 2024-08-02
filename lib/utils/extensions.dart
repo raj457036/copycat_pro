@@ -1,5 +1,6 @@
 import 'package:copycat_base/db/subscription/subscription.dart';
 import 'package:copycat_base/domain/model/auth_user/auth_user.dart';
+import 'package:copycat_pro/utils/monetization.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as sb;
 
@@ -21,14 +22,14 @@ extension CustomerInfoExtension on CustomerInfo {
     late Subscription subscription;
     if (proEntitlement != null) {
       final activeTill = DateTime.parse(proEntitlement.expirationDate!);
-      subscription = Subscription.pro(
+      subscription = generateProPlan(
         originalAppUserId,
         activeTill,
         proEntitlement.productIdentifier == "rc_promo_pro features_custom",
         managementURL,
       );
     } else {
-      subscription = Subscription.free(originalAppUserId);
+      subscription = generateFreePlan(originalAppUserId);
     }
 
     return subscription;

@@ -11,11 +11,10 @@ class DropArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.colors;
     final textTheme = context.textTheme;
     return SizedBox.expand(
       child: ColoredBox(
-        color: colors.secondaryContainer,
+        color: Colors.black87,
         child: processing
             ? const CircularProgressIndicator.adaptive()
             : Column(
