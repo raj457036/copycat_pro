@@ -91,7 +91,7 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
         final reader = item.dataReader;
         if (reader == null) continue;
         DataFormat? selectedFormat;
-        final itemFormats = reader.getFormats(allSupportedFormats);
+        final itemFormats = reader.getFormats(allSupportedClipFormats);
 
         (selectedFormat, selectedPref) = cubit.clipboard.filterOutByPriority(
           itemFormats,
@@ -124,7 +124,7 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
   @override
   Widget build(BuildContext context) {
     return DropRegion(
-      formats: allSupportedFormats,
+      formats: allSupportedClipFormats,
       hitTestBehavior: HitTestBehavior.opaque,
       onDropOver: onDropOver,
       onDropEnter: onDropEnter,
