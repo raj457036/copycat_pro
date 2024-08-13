@@ -51,6 +51,8 @@ mixin MonetizationService {
         await setupRevenuCat(userId);
       }
 
+      if (!_setupDone) return false;
+
       await Purchases.logIn(userId);
       try {
         final result = await Purchases.getCustomerInfo();
