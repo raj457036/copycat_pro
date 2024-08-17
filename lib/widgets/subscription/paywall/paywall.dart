@@ -197,8 +197,8 @@ class CustomPaywallStateDialog extends State<CustomPaywallDialog> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(
-              AssetConstants.copyCatIcon,
+            const Image(
+              image: AssetImage(AssetConstants.copyCatIcon),
               width: 100,
             ),
             height16,
