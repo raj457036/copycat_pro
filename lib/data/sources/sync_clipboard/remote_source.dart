@@ -49,7 +49,7 @@ class SyncClipboardSourceImpl implements SyncClipboardSource {
         .map((e) => e.copyWith(lastSynced: now()))).toList();
     return PaginatedResult(
       results: clips,
-      hasMore: clips.length > limit,
+      hasMore: clips.length == limit,
     );
   }
 
@@ -87,7 +87,7 @@ class SyncClipboardSourceImpl implements SyncClipboardSource {
         .toList();
     return PaginatedResult(
       results: items,
-      hasMore: items.length > limit,
+      hasMore: items.length == limit,
     );
   }
 
@@ -117,7 +117,7 @@ class SyncClipboardSourceImpl implements SyncClipboardSource {
     final items = docs.map((e) => ClipboardItem.fromJson(e)).toList();
     return PaginatedResult(
       results: items,
-      hasMore: items.length > limit,
+      hasMore: items.length == limit,
     );
   }
 
@@ -148,7 +148,7 @@ class SyncClipboardSourceImpl implements SyncClipboardSource {
     final items = docs.map((e) => ClipCollection.fromJson(e)).toList();
     return PaginatedResult(
       results: items,
-      hasMore: items.length > limit,
+      hasMore: items.length == limit,
     );
   }
 }
