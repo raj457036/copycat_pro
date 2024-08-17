@@ -35,8 +35,8 @@ class RemoteClipboardSource implements ClipboardSource {
     int limit = 50,
     int offset = 0,
     String? search, // no-op
-    List<String>? category, // no-op
-    List<ClipItemType>? types, // no-op
+    Set<TextCategory>? textCategories, // no-op
+    Set<ClipItemType>? types, // no-op
     int? collectionId, // no-op
     ClipboardSortKey? sortBy, // no-op
     SortOrder order = SortOrder.desc, // no-op
