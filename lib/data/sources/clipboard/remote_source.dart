@@ -28,18 +28,20 @@ class RemoteClipboardSource implements ClipboardSource {
     return createdItem;
   }
 
-  /// sortBy is no-op
+  /// search, category, types, collectionId, sortBy,
+  /// order, from, to are no-op
   @override
   Future<PaginatedResult<ClipboardItem>> getList({
     int limit = 50,
     int offset = 0,
-    DateTime? afterDate,
-    String? search,
+    String? search, // no-op
     List<String>? category, // no-op
     List<ClipItemType>? types, // no-op
-    int? collectionId,
-    ClipboardSortKey? sortBy,
-    SortOrder order = SortOrder.desc,
+    int? collectionId, // no-op
+    ClipboardSortKey? sortBy, // no-op
+    SortOrder order = SortOrder.desc, // no-op
+    DateTime? from, // no-op
+    DateTime? to, // no-op
   }) async {
     final items = await db
         .from(table)
