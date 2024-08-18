@@ -70,7 +70,7 @@ class RemoteClipboardSource implements ClipboardSource {
       return true;
     }
 
-    item = item.copyWith(deletedAt: now(), modified: now());
+    item = item.copyWith(deletedAt: now(), modified: now(), text: "", url: "");
     await db.from(table).update(item.toJson()).eq("id", item.serverId!);
     return true;
   }
