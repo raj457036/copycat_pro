@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:copycat_base/bloc/app_config_cubit/app_config_cubit.dart';
 import 'package:copycat_base/bloc/offline_persistance_cubit/offline_persistance_cubit.dart';
 import 'package:copycat_base/common/logging.dart';
-import 'package:copycat_base/constants/numbers/breakpoints.dart';
 import 'package:copycat_base/data/services/clipboard_service.dart';
 import 'package:copycat_base/l10n/l10n.dart';
 import 'package:copycat_base/utils/snackbar.dart';
@@ -25,9 +24,9 @@ class ClipDropRegionProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final side = MediaQuery.of(context).size.shortestSide;
-    final isTablet = side > Breakpoints.sm;
-    if (Platform.isAndroid && !isTablet) return child;
+    // final side = MediaQuery.of(context).size.shortestSide;
+    // final isTablet = side > Breakpoints.sm;
+    if (Platform.isAndroid) return child;
 
     return BlocSelector<AppConfigCubit, AppConfigState, bool>(
         selector: (state) {

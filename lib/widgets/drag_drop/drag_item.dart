@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:copycat_base/bloc/app_config_cubit/app_config_cubit.dart';
-import 'package:copycat_base/constants/numbers/breakpoints.dart';
 import 'package:copycat_base/constants/widget_styles.dart';
 import 'package:copycat_base/db/clipboard_item/clipboard_item.dart';
 import 'package:copycat_base/enums/clip_type.dart';
@@ -64,9 +63,9 @@ class DraggableItem extends StatelessWidget {
   Widget build(BuildContext context) {
     if (item.needDownload) return child;
 
-    final side = MediaQuery.of(context).size.shortestSide;
-    final isTablet = side > Breakpoints.sm;
-    if (Platform.isAndroid && !isTablet) return child;
+    // final side = MediaQuery.of(context).size.shortestSide;
+    // final isTablet = side > Breakpoints.sm;
+    if (Platform.isAndroid) return child;
 
     return BlocSelector<AppConfigCubit, AppConfigState, bool>(
         selector: (state) {
