@@ -37,6 +37,7 @@ Subscription generateProPlan(
     collections: 50,
     itemsPerCollection: 500,
     dragNdrop: true,
+    theming: true,
     syncHours: 720,
     syncInterval: 5,
     maxSyncDevices: 5,

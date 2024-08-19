@@ -1,12 +1,16 @@
 import 'dart:async';
 
+import 'package:copycat_base/bloc/app_config_cubit/app_config_cubit.dart';
+import 'package:copycat_base/constants/numbers/breakpoints.dart';
 import 'package:copycat_base/constants/widget_styles.dart';
 import 'package:copycat_base/db/clipboard_item/clipboard_item.dart';
 import 'package:copycat_base/enums/clip_type.dart';
 import 'package:copycat_base/utils/common_extension.dart';
 import 'package:copycat_base/widgets/clip_cards/file_clip_card.dart';
 import 'package:copycat_base/widgets/clip_cards/media_clip_card.dart';
+import 'package:copycat_pro/widgets/subscription/subscription_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
 import 'package:universal_io/io.dart';
 
@@ -59,17 +63,41 @@ class DraggableItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (item.needDownload) return child;
-    return DragItemWidget(
-      canAddItemToExistingSession: true,
-      dragItemProvider: dragItemProvider,
-      allowedOperations: () => const [
-        DropOperation.copy,
-        // DropOperation.userCancelled,
-      ],
-      liftBuilder: previewBuilder,
-      dragBuilder: previewBuilder,
-      child: DraggableWidget(child: child),
-    );
+
+    final side = MediaQuery.of(context).size.shortestSide;
+    final isTablet = side > Breakpoints.sm;
+    if (Platform.isAndroid && !isTablet) return child;
+
+    return BlocSelector<AppConfigCubit, AppConfigState, bool>(
+        selector: (state) {
+      switch (state) {
+        case AppConfigLoaded(:final config):
+          return config.enableDragNDrop;
+        default:
+          return false;
+      }
+    }, builder: (context, enabled) {
+      if (!enabled) return child;
+      return SubscriptionBuilder(
+        builder: (context, subscription) {
+          if (subscription == null) return child;
+          if (subscription.isActive && subscription.dragNdrop) {
+            return DragItemWidget(
+              canAddItemToExistingSession: true,
+              dragItemProvider: dragItemProvider,
+              allowedOperations: () => const [
+                DropOperation.copy,
+                // DropOperation.userCancelled,
+              ],
+              liftBuilder: previewBuilder,
+              dragBuilder: previewBuilder,
+              child: DraggableWidget(child: child),
+            );
+          }
+          return child;
+        },
+      );
+    });
   }
 
   FutureOr<DragItem?> dragItemProvider(request) async {

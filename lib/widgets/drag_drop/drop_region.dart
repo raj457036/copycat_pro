@@ -1,16 +1,54 @@
 import 'dart:async';
 
+import 'package:copycat_base/bloc/app_config_cubit/app_config_cubit.dart';
 import 'package:copycat_base/bloc/offline_persistance_cubit/offline_persistance_cubit.dart';
 import 'package:copycat_base/common/logging.dart';
+import 'package:copycat_base/constants/numbers/breakpoints.dart';
 import 'package:copycat_base/data/services/clipboard_service.dart';
 import 'package:copycat_base/l10n/l10n.dart';
 import 'package:copycat_base/utils/snackbar.dart';
 import 'package:copycat_pro/constants/number/values.dart';
 import 'package:copycat_pro/widgets/drag_drop/drop_area.dart';
+import 'package:copycat_pro/widgets/subscription/subscription_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:super_clipboard/super_clipboard.dart';
 import 'package:super_drag_and_drop/super_drag_and_drop.dart';
+import 'package:universal_io/io.dart';
+
+class ClipDropRegionProvider extends StatelessWidget {
+  final Widget child;
+  const ClipDropRegionProvider({
+    super.key,
+    required this.child,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final side = MediaQuery.of(context).size.shortestSide;
+    final isTablet = side > Breakpoints.sm;
+    if (Platform.isAndroid && !isTablet) return child;
+
+    return BlocSelector<AppConfigCubit, AppConfigState, bool>(
+        selector: (state) {
+      switch (state) {
+        case AppConfigLoaded(:final config):
+          return config.enableDragNDrop;
+        default:
+          return false;
+      }
+    }, builder: (context, enabled) {
+      if (!enabled) return child;
+      return SubscriptionBuilder(builder: (context, subscription) {
+        if (subscription == null) return child;
+        if (subscription.isActive && subscription.dragNdrop) {
+          return ClipDropRegion(child: child);
+        }
+        return child;
+      });
+    });
+  }
+}
 
 class ClipDropRegion extends StatefulWidget {
   final Widget child;
@@ -125,7 +163,6 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
   Widget build(BuildContext context) {
     return DropRegion(
       formats: allSupportedClipFormats,
-      hitTestBehavior: HitTestBehavior.opaque,
       onDropOver: onDropOver,
       onDropEnter: onDropEnter,
       onDropLeave: onDropLeave,
@@ -135,7 +172,7 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
         children: [
           widget.child,
           if (dropZoneActive)
-            SizedBox.expand(
+            Positioned.fill(
               child: DropArea(processing: processing),
             ),
         ],
