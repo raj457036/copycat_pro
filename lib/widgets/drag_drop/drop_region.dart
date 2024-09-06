@@ -17,9 +17,14 @@ import 'package:universal_io/io.dart';
 
 class ClipDropRegionProvider extends StatelessWidget {
   final Widget child;
+  final VoidCallback? onDragStart;
+  final VoidCallback? onDragStop;
+
   const ClipDropRegionProvider({
     super.key,
     required this.child,
+    this.onDragStart,
+    this.onDragStop,
   });
 
   @override
@@ -41,7 +46,11 @@ class ClipDropRegionProvider extends StatelessWidget {
       return SubscriptionBuilder(builder: (context, subscription) {
         if (subscription == null) return child;
         if (subscription.isActive && subscription.dragNdrop) {
-          return ClipDropRegion(child: child);
+          return ClipDropRegion(
+            onDragStart: onDragStart,
+            onDragStop: onDragStop,
+            child: child,
+          );
         }
         return child;
       });
@@ -51,10 +60,14 @@ class ClipDropRegionProvider extends StatelessWidget {
 
 class ClipDropRegion extends StatefulWidget {
   final Widget child;
+  final VoidCallback? onDragStart;
+  final VoidCallback? onDragStop;
 
   const ClipDropRegion({
     super.key,
     required this.child,
+    this.onDragStart,
+    this.onDragStop,
   });
 
   @override
@@ -64,7 +77,23 @@ class ClipDropRegion extends StatefulWidget {
 class _ClipDropRegionState extends State<ClipDropRegion> {
   bool dropZoneActive = false;
   bool processing = false;
+  bool _dragStarted = false;
   late final OfflinePersistanceCubit cubit;
+
+  void didDragStart(DropSession session) {
+    if (widget.onDragStart == null || _dragStarted) return;
+    final isLocalItem = session.items.firstOrNull?.localData != null;
+    if (isLocalItem) {
+      widget.onDragStart!();
+      _dragStarted = true;
+    }
+  }
+
+  void didDragStop(DropSession session) {
+    if (widget.onDragStop == null || !_dragStarted) return;
+    _dragStarted = false;
+    widget.onDragStop!();
+  }
 
   @override
   void initState() {
@@ -82,10 +111,16 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
   }
 
   void onDropEnter(DropEvent event) {
+    didDragStart(event.session);
     final item = event.session.items.first;
     final isDropAllowed = dropAllowed(item);
     if (!isDropAllowed) return;
     enableDropZone();
+  }
+
+  void onDropEnded(DropEvent event) {
+    didDragStop(event.session);
+    disableDropZone();
   }
 
   void onDropLeave(DropEvent event) {
@@ -165,7 +200,7 @@ class _ClipDropRegionState extends State<ClipDropRegion> {
       onDropOver: onDropOver,
       onDropEnter: onDropEnter,
       onDropLeave: onDropLeave,
-      onDropEnded: onDropLeave,
+      onDropEnded: onDropEnded,
       onPerformDrop: onPerformDrop,
       child: Stack(
         children: [
