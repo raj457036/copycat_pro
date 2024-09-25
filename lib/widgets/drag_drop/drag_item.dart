@@ -63,7 +63,7 @@ class DraggableItem extends StatelessWidget {
   Widget build(BuildContext context) {
     if (item.needDownload) return child;
 
-    // final side = MediaQuery.of(context).size.shortestSide;
+    // final side = context.mq.size.shortestSide;
     // final isTablet = side > Breakpoints.sm;
     if (Platform.isAndroid) return child;
 

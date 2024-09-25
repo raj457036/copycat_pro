@@ -29,7 +29,7 @@ class ClipDropRegionProvider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final side = MediaQuery.of(context).size.shortestSide;
+    // final side = context.mq.size.shortestSide;
     // final isTablet = side > Breakpoints.sm;
     if (Platform.isAndroid) return child;
 
