@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:copycat_base/bloc/app_config_cubit/app_config_cubit.dart';
 import 'package:copycat_base/constants/widget_styles.dart';
+import 'package:copycat_base/db/app_config/appconfig.dart';
 import 'package:copycat_base/db/clipboard_item/clipboard_item.dart';
 import 'package:copycat_base/enums/clip_type.dart';
 import 'package:copycat_base/utils/common_extension.dart';
@@ -41,16 +42,15 @@ class DraggableItem extends StatelessWidget {
             ),
           ),
         );
-        break;
+
       case ClipItemType.media:
         content = ClipRRect(
           borderRadius: radius12,
-          child: MediaClipCard(item: item),
+          child: MediaClipCard(item: item, layout: AppLayout.grid),
         );
-        break;
+
       case ClipItemType.file:
-        content = FileClipCard(item: item);
-        break;
+        content = FileClipCard(item: item, layout: AppLayout.grid);
     }
 
     return SizedBox.square(
@@ -105,14 +105,14 @@ class DraggableItem extends StatelessWidget {
     switch (item.type) {
       case ClipItemType.text:
         dragItem.add(Formats.plainText(item.text!));
-        break;
+
       case ClipItemType.url:
         dragItem.add(
           Formats.uri(
             NamedUri(Uri.parse(item.url!), name: item.title),
           ),
         );
-        break;
+
       case ClipItemType.media:
       case ClipItemType.file:
         final fileUri = Formats.fileUri(
@@ -122,7 +122,6 @@ class DraggableItem extends StatelessWidget {
           ),
         );
         dragItem.add(fileUri);
-        break;
     }
 
     return dragItem;
