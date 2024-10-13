@@ -98,4 +98,26 @@ class RemoteClipboardSource implements ClipboardSource {
   Future<void> decryptPending() {
     throw UnimplementedError();
   }
+
+  @override
+  Future<bool> deleteMany(List<ClipboardItem> items) async {
+    final items_ = items.where((item) => item.serverId != null).map(
+      (item) {
+        final json = item
+            .copyWith(
+              deletedAt: now(),
+              modified: now(),
+              text: "",
+              url: "",
+            )
+            .toJson();
+        return {
+          ...json,
+          "id": item.serverId,
+        };
+      },
+    ).toList();
+    await db.from(table).upsert(items_);
+    return true;
+  }
 }
