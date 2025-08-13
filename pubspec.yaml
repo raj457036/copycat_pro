@@ -21,8 +21,8 @@ dependencies:
   purchases_flutter: ^9.2.0
   purchases_ui_flutter: ^9.2.0
   retry: ^3.1.2
-  supabase_flutter: ^2.8.3
-  supabase_auth_ui: ^0.5.4
+  supabase_flutter: ^2.9.1
+  supabase_auth_ui: ^0.5.5
   googleapis: ^13.1.0
   dartz: ^0.10.1
   url_launcher: ^6.3.0
