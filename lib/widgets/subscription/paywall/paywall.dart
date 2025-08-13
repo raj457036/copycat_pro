@@ -93,9 +93,9 @@ class CustomPaywallStateDialog extends State<CustomPaywallDialog> {
       errorMessage = null;
     });
     try {
-      final customerInfo = await Purchases.purchasePackage(selectedPackage!);
+      final purchaseResult = await Purchases.purchasePackage(selectedPackage!);
 
-      widget.onSubscription(customerInfo.toSubscription());
+      widget.onSubscription(purchaseResult.customerInfo.toSubscription());
 
       if (mounted) {
         Navigator.pop(context);
